@@ -6,7 +6,7 @@ addCommandAlias("idea", "update-classifiers; update-sbt-classifiers; gen-idea sb
 
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "3.3.0",
-  "com.brindescu" %% "gumtree-facade" % "0.2" withSources() withJavadoc()
+  "com.brindescu" %% "gumtree-facade" % "0.3" withSources() withJavadoc()
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
