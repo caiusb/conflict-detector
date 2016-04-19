@@ -7,12 +7,11 @@ object ConflictDetector {
 
 	class EqualityWrapper(private val n: ASTNode) {
 
-		override def equals(that: Any): Boolean = {
+		override def equals(that: Any): Boolean =
 			that match {
 				case that: EqualityWrapper => that.n.subtreeMatch(new ASTMatcher(), n)
 				case _ => false
 			}
-		}
 
 		override def hashCode(): Int =
 			n.getNodeType + n.getLength + n.getStartPosition + 29
