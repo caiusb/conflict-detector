@@ -5,7 +5,7 @@ import org.eclipse.jdt.core.dom.{ASTMatcher, ASTNode}
 
 object ConflictDetector {
 
-	class EqualityWrapper(private val n: ASTNode) {
+	private class EqualityWrapper(private val n: ASTNode) {
 
 		override def equals(that: Any): Boolean =
 			that match {
