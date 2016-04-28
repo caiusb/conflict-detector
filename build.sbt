@@ -13,6 +13,8 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
 resolvers += Resolver.sonatypeRepo("public")
 
+resolvers += "Mine" at "http://releases.ivy.brindescu.com"
+
 val mc = Some("edu.oregonstate.merging.operation.Main")
 
 mainClass in (Compile, run) := mc
@@ -33,4 +35,9 @@ lazy val versionReport = TaskKey[String]("version-report")
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case x => MergeStrategy.first
+}
+
+publishTo := {
+  val prefix = if (isSnapshot.value) "snapshots" else "releases"
+  Some("Webpage" at "s3://"+prefix+".ivy.brindescu.com")
 }
