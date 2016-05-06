@@ -11,9 +11,10 @@ libraryDependencies ++= Seq(
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
-resolvers += Resolver.sonatypeRepo("public")
-
-resolvers += "Mine" at "http://releases.ivy.brindescu.com"
+resolvers ++= Seq(Resolver.sonatypeRepo("public"),
+  "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository",
+  "Mine" at "http://releases.ivy.brindescu.com"
+)
 
 val mc = Some("edu.oregonstate.merging.operation.Main")
 
