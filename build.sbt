@@ -27,7 +27,7 @@ lazy val ConflictDetector = (project in file(".")).
   settings(
     organization := "com.brindescu",
     name := "conflict-detector",
-    version := "0.1"
+    version := "0.2-SNAPSHOT"
   )
 
 lazy val versionReport = TaskKey[String]("version-report")
