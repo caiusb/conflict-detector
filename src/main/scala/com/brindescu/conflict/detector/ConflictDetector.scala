@@ -29,8 +29,8 @@ object ConflictDetector {
 		  .map(n => new EqualityWrapper(n))
 
 		val nodesTouchedBySecondChange = secondChanges.getActions
-			.map(n => secondChanges.getMatch(n.getNode))
-			.filter(a => a.isDefined)
+			.map(a => secondChanges.getMatch(a.getNode))
+			.filter(n => n.isDefined)
 		  .map(n => n.get)
 		  .map(ASTDiff.getASTNode)
 			.map(n => new EqualityWrapper(n))
