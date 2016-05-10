@@ -22,6 +22,8 @@ mainClass in (Compile, run) := mc
 
 mainClass in assembly := mc
 
+scalaVersion := "2.11.7"
+
 crossScalaVersions := Seq("2.10.6", "2.11.7")
 
 lazy val ConflictDetector = (project in file(".")).
