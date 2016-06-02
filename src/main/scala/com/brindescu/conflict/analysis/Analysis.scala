@@ -57,7 +57,7 @@ class Analysis {
 	}
 
 	def setExclusion(pattern: String): Analysis = {
-		config = config.withValue(EXCLUSIONS, ConfigValueFactory.fromAnyRef("pattern"))
+		config = config.withValue(EXCLUSIONS, ConfigValueFactory.fromAnyRef(pattern))
 		this
 	}
 
