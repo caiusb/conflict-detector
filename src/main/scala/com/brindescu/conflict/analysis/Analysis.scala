@@ -61,6 +61,12 @@ class Analysis {
 		this
 	}
 
+	def makeQuiet(): Analysis = {
+		config = config.withValue(QUIET, ConfigValueFactory.fromAnyRef("true"))
+		this
+	}
+
+
 	def getPointerAnalysis() = {
 		implicit val config = this.config
 		new FlexibleCallGraphBuilder() {
@@ -76,4 +82,5 @@ private object WALAConstants {
 	val JAR_DEPENDENCY = "wala.dependencies.jar"
 	val ENTRY_POINT = "wala.entry.signature-pattern"
 	val EXCLUSIONS = "wala.exclusions"
+	val QUIET = "wala.config.quiet"
 }
