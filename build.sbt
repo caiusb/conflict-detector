@@ -6,11 +6,11 @@ addCommandAlias("idea", "update-classifiers; update-sbt-classifiers; gen-idea sb
 
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "3.3.0",
-  "com.brindescu" %% "gumtree-facade" % "0.3" withSources() withJavadoc(),
+  "com.brindescu" %% "gumtree-facade" % "0.4-SNAPSHOT" withSources() withJavadoc(),
   "edu.illinois.wala" %% "walafacade" % "0.1.3-SNAPSHOT" withSources()
 )
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.+" % "test"
 
 resolvers ++= Seq(Resolver.sonatypeRepo("public"),
   "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository",
