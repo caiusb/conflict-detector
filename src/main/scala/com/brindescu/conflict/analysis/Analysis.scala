@@ -11,6 +11,7 @@ import scala.collection.JavaConversions._
 class Analysis {
 
 	private var config: Config = ConfigFactory.empty()
+	var ncfa = 0
 
 	addJavaLibraries
 
@@ -61,6 +62,11 @@ class Analysis {
 		this
 	}
 
+	def setNCFA(ncfa: Int): Analysis = {
+		this.ncfa = ncfa
+		this
+	}
+
 	def makeQuiet(): Analysis = {
 		config = config.withValue(QUIET, ConfigValueFactory.fromAnyRef("true"))
 		this
@@ -70,7 +76,7 @@ class Analysis {
 	def getPointerAnalysis() = {
 		implicit val config = this.config
 		new FlexibleCallGraphBuilder() {
-			override def cs = new nCFAContextSelector(0, new ContextInsensitiveSelector())
+			override def cs = new nCFAContextSelector(ncfa, new ContextInsensitiveSelector())
 		}
 	}
 }
