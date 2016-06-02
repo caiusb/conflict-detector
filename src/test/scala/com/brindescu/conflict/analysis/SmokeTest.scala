@@ -43,6 +43,10 @@ class SmokeTest extends FlatSpec with Matchers {
 		val pa = analysis.getPointerAnalysis()
 
 		val withVariables = analysis.getDUPathsForMethod("m")
-		println(withVariables)
+
+		withVariables should have size 5
+		withVariables.get(Set("x")).get should have size 2
+		withVariables.get(Set("y")).get should have size 1
+		//withVariables.get(Set("z")).get should have size 1
 	}
 }
