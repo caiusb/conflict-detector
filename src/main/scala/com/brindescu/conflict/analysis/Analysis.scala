@@ -6,7 +6,6 @@ import com.ibm.wala.ipa.callgraph.propagation.cfa.nCFAContextSelector
 import com.typesafe.config.{Config, ConfigFactory, ConfigList, ConfigValueFactory}
 import edu.illinois.wala.Facade._
 import edu.illinois.wala.S
-import edu.illinois.wala.classLoader.CodeLocation
 import edu.illinois.wala.ipa.callgraph.FlexibleCallGraphBuilder
 import edu.illinois.wala.ssa.V
 
@@ -84,16 +83,16 @@ class Analysis {
 		}
 	}
 
-	def getDUPathsForMethod(methodName: String): Map[Set[String], List[Option[CodeLocation]]] = {
+	def getDUPathsForMethod(methodName: String): List[MethodDU] = {
 		val cg = getPointerAnalysis().cg
-		val method = (cg filter {_.m.name == methodName	}).head
-		getDUPathsForMethod(method)
+		val methods = (cg filter {_.m.name == methodName	})
+		methods map { getDUPathsForMethod(_) } toList
 	}
 
-	def getDUPathsForMethod(method: N): Map[Set[String], List[Option[CodeLocation]]] = {
+	def getDUPathsForMethod(method: N): MethodDU = {
 		val defs = method.getIR.iterateAllInstructions.map(i => i.getDef).toList
 		val defUseMap = defs.map(d => d -> method.getDU.getUses(d).toList).toMap
-		defUseMap.map { case (k, v) =>
+		MethodDU(defUseMap.map { case (k, v) =>
 			val names = method.variableNames(V(k))
 			if (!names.isEmpty)
 				names -> v
@@ -101,7 +100,7 @@ class Analysis {
 				Set(k.toString) -> v
 		} map { case (k, v) =>
 			k -> v.map { i => S(method, i).codeLocation }
-		}
+		})
 	}
 }
 
