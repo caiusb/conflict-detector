@@ -4,7 +4,11 @@ import com.brindescu.conflict.analysis.WALAConstants._
 import com.ibm.wala.ipa.callgraph.impl.ContextInsensitiveSelector
 import com.ibm.wala.ipa.callgraph.propagation.cfa.nCFAContextSelector
 import com.typesafe.config.{Config, ConfigFactory, ConfigList, ConfigValueFactory}
+import edu.illinois.wala.Facade._
+import edu.illinois.wala.S
+import edu.illinois.wala.classLoader.CodeLocation
 import edu.illinois.wala.ipa.callgraph.FlexibleCallGraphBuilder
+import edu.illinois.wala.ssa.V
 
 import scala.collection.JavaConversions._
 
@@ -77,6 +81,26 @@ class Analysis {
 		implicit val config = this.config
 		new FlexibleCallGraphBuilder() {
 			override def cs = new nCFAContextSelector(ncfa, new ContextInsensitiveSelector())
+		}
+	}
+
+	def getDUPathsForMethod(methodName: String): Map[Set[String], List[Option[CodeLocation]]] = {
+		val cg = getPointerAnalysis().cg
+		val method = (cg filter {_.m.name == methodName	}).head
+		getDUPathsForMethod(method)
+	}
+
+	def getDUPathsForMethod(method: N): Map[Set[String], List[Option[CodeLocation]]] = {
+		val defs = method.getIR.iterateAllInstructions.map(i => i.getDef).toList
+		val defUseMap = defs.map(d => d -> method.getDU.getUses(d).toList).toMap
+		defUseMap.map { case (k, v) =>
+			val names = method.variableNames(V(k))
+			if (!names.isEmpty)
+				names -> v
+			else
+				Set(k.toString) -> v
+		} map { case (k, v) =>
+			k -> v.map { i => S(method, i).codeLocation }
 		}
 	}
 }
