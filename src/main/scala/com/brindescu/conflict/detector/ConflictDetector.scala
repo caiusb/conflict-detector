@@ -2,6 +2,7 @@ package com.brindescu.conflict.detector
 
 import com.brindescu.gumtree.facade.ASTDiff
 import org.eclipse.jdt.core.dom.{ASTMatcher, ASTNode}
+import com.brindescu.gumtree.facade.Gumtree._
 
 object ConflictDetector {
 
@@ -25,15 +26,13 @@ object ConflictDetector {
 			.map(a => firstChanges.getMatch(a.getNode))
 			.filter(n => n.isDefined)
 		  .map(n => n.get)
-		  .map(ASTDiff.getASTNode)
-		  .map(n => new EqualityWrapper(n))
+		  .map(n => new EqualityWrapper(n.getNode))
 
 		val nodesTouchedBySecondChange = secondChanges.getActions
 			.map(a => secondChanges.getMatch(a.getNode))
 			.filter(n => n.isDefined)
 		  .map(n => n.get)
-		  .map(ASTDiff.getASTNode)
-			.map(n => new EqualityWrapper(n))
+			.map(n => new EqualityWrapper(n.getNode))
 
 		val conflicts = nodesTouchedByFirstChange.intersect(nodesTouchedBySecondChange)
 
