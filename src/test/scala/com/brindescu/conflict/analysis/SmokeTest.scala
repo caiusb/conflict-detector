@@ -30,7 +30,6 @@ class SmokeTest extends FlatSpec with Matchers {
 
 		val nodes = DFS.getReachableNodes(cg, cg filter { _.m.name == "bar"})
 			.flatMap { n => n.instructions collect { case i: PutI => (i.f.get, P(n, i.v).variableNames()) } }
-		print(nodes)
 
 		nodes should have size 3
 	}
