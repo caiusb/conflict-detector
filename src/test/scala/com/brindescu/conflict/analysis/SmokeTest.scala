@@ -4,7 +4,6 @@ import java.io.File
 
 import com.ibm.wala.util.graph.traverse.DFS
 import edu.illinois.wala.Facade._
-import edu.illinois.wala.classLoader.CodeLocation
 import edu.illinois.wala.ipa.callgraph.propagation.P
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -17,12 +16,10 @@ class SmokeTest extends FlatSpec with Matchers {
 
 	it should "correctly run WALA" in {
 
-
 		val analysis = new Analysis()
 		  .setEntryPoint(".*Foo.*main.*")
 		  .addSourceDependency(getResourceFile("/wala-smoke"))
 		  .setExclusion("")
-
 
 		val pa = analysis.getPointerAnalysis
 
