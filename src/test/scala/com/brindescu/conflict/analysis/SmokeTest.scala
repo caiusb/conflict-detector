@@ -9,10 +9,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 import scala.collection.JavaConversions._
 
-class SmokeTest extends FlatSpec with Matchers {
-
-	def getResourceFile(name: String): String =
-		new File(this.getClass.getResource(name).getFile).getAbsolutePath
+class SmokeTest extends FlatSpec with Matchers with ResourceAccess {
 
 	it should "correctly run WALA" in {
 
