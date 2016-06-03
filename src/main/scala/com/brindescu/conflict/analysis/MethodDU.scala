@@ -37,9 +37,9 @@ object MethodDU {
 			.map(d => d -> getUses(method, d)).toMap
 		val uses = localUses ++ paramUses
 		MethodDU(uses.keys flatMap { value =>
-			resolveVariableNames(method, value, uses.get(value))
+			resolveVariableNames(method, value, uses.get(value).get)
 		} map { t => Map(t) } reduce (_ ++ _)
-			collect { case (k, Some(v)) => k -> v.flatMap { i => resolveInstructionLineNo(method, i) }
+			collect { case (k, v) => k -> v.flatMap { i => resolveInstructionLineNo(method, i) }
 		}, method.getMethod)
 	}
 
@@ -49,7 +49,7 @@ object MethodDU {
 	private def resolveInstructionLineNo(method: N, i: I): Iterable[CodeLocation] =
 		S(method, i).codeLocation
 
-	private def resolveVariableNames(method: N, k: Int, uses: Option[List[I]]): Set[(String, Option[List[SSAInstruction]])] = {
+	private def resolveVariableNames(method: N, k: Int, uses: List[I]): Set[(String, List[SSAInstruction])] = {
 		val names = method.variableNames(V(k))
 		if (!names.isEmpty)
 			names.map(_ -> uses)
