@@ -8,10 +8,11 @@ import edu.illinois.wala.ssa.V
 
 import scala.collection.JavaConversions._
 
-class MethodDU(private val du: Map[String, List[CodeLocation]]) {
+class MethodDU(private val du: Map[String, List[CodeLocation]],
+							 private val m: M) {
 
 	def getMethodSignature: String = {
-		???
+		m.getSignature
 	}
 
 	def getLocalVariables: Set[String] = {
@@ -25,8 +26,8 @@ class MethodDU(private val du: Map[String, List[CodeLocation]]) {
 }
 
 object MethodDU {
-	def apply(du: Map[String, List[CodeLocation]]) =
-		new MethodDU(du)
+	def apply(du: Map[String, List[CodeLocation]], m: M) =
+		new MethodDU(du, m)
 
 	def getDUPathsForMethod(method: N): MethodDU = {
 		val localUses = method.getIR.iterateAllInstructions.map { i => i.getDef(0) }
@@ -39,7 +40,7 @@ object MethodDU {
 			resolveVariableNames(method, value, uses.get(value))
 		} map { t => Map(t) } reduce (_ ++ _)
 			map { case (k, Some(v)) => k -> v.flatMap { i => resolveInstructionLineNo(method, i) }
-		})
+		}, method.getMethod)
 	}
 
 	private def getUses(method: N, d: Int): List[SSAInstruction] =

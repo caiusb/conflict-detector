@@ -39,4 +39,11 @@ class MethodDUTest extends FlatSpec with Matchers with ResourceAccess {
 		val withVariables = analysis.getDUPathsForMethod("m")
 		withVariables.last.getUsesForVariable("a") should have size 1
 	}
+
+	it should "have the correct signature" in {
+		val analysis = getOverloadedAnalysis
+
+		val withVariables = analysis.getDUPathsForMethod("m")
+		withVariables.head.getMethodSignature should equal ("OverloadedDefUse.m()V")
+	}
 }
