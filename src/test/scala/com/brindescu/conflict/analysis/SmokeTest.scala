@@ -44,6 +44,6 @@ class SmokeTest extends FlatSpec with Matchers {
 		withVariables should have size 1
 		withVariables.head.getUsesForVariable("x") should have size 2
 		withVariables.head.getUsesForVariable("y") should have size 1
-		//withVariables.head.getUsesForVariable("z") should have size 1
+		withVariables.head.getUsesForVariable("z") should have size 1
 	}
 }
