@@ -39,7 +39,7 @@ object MethodDU {
 		MethodDU(uses.keys flatMap { value =>
 			resolveVariableNames(method, value, uses.get(value))
 		} map { t => Map(t) } reduce (_ ++ _)
-			map { case (k, Some(v)) => k -> v.flatMap { i => resolveInstructionLineNo(method, i) }
+			collect { case (k, Some(v)) => k -> v.flatMap { i => resolveInstructionLineNo(method, i) }
 		}, method.getMethod)
 	}
 
