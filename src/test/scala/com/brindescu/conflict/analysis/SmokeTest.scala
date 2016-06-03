@@ -1,7 +1,5 @@
 package com.brindescu.conflict.analysis
 
-import java.io.File
-
 import com.ibm.wala.util.graph.traverse.DFS
 import edu.illinois.wala.Facade._
 import edu.illinois.wala.ipa.callgraph.propagation.P
