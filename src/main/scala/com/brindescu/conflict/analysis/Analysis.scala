@@ -92,35 +92,7 @@ class Analysis {
 	def getDUPathsForMethod(methodName: String): List[MethodDU] = {
 		val cg = pa.cg
 		val methods = cg filter {_.m.name == methodName	}
-		methods map { getDUPathsForMethod(_) } toList
-	}
-
-	def getDUPathsForMethod(method: N): MethodDU = {
-		val localUses = method.getIR.iterateAllInstructions.map { i => i.getDef(0) }
-			.map(d => d -> getUses(method, d)).toMap
-		val paramUses = Range(0, method.getIR.getNumberOfParameters)
-			.map(p => method.getIR.getParameter(p))
-			.map(d => d -> getUses(method, d)).toMap
-		val uses = localUses ++ paramUses
-		MethodDU(uses.keys flatMap { value =>
-			resolveVariableNames(method, value, uses.get(value))
-		} map { t => Map(t) } reduce (_ ++ _)
-		map { case (k, Some(v)) => k -> v.flatMap { i => resolveInstructionLineNo(method, i) }
-		})
-	}
-
-	private def getUses(method: N, d: Int): List[SSAInstruction] =
-		method.getDU.getUses(d).toList
-
-	private def resolveInstructionLineNo(method: N, i: I): Iterable[CodeLocation] =
-		S(method, i).codeLocation
-
-	private def resolveVariableNames(method: N, k: Int, uses: Option[List[I]]): Set[(String, Option[List[SSAInstruction]])] = {
-		val names = method.variableNames(V(k))
-		if (!names.isEmpty)
-			names.map(_ -> uses)
-		else
-			Set(k.toString -> uses)
+		methods map { MethodDU.getDUPathsForMethod(_) } toList
 	}
 }
 
