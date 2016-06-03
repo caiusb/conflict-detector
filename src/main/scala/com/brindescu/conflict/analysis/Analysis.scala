@@ -90,16 +90,16 @@ class Analysis {
 	}
 
 	def getDUPathsForMethod(method: N): MethodDU = {
-		val defs = method.getIR.iterateAllInstructions.map(i => i.getDef).toList
-		val defUseMap = defs.map(d => d -> method.getDU.getUses(d).toList).toMap
-		MethodDU(defUseMap.map { case (k, v) =>
+		val defUseMap = method.getIR.iterateAllInstructions.map(i => i.getDef)
+			.map(d => d -> method.getDU.getUses(d).toList).toMap
+		MethodDU(defUseMap.keys flatMap { k =>
 			val names = method.variableNames(V(k))
 			if (!names.isEmpty)
-				names -> v
+				names.map(_ -> defUseMap.get(k))
 			else
-				Set(k.toString) -> v
-		} map { case (k, v) =>
-			k -> v.map { i => S(method, i).codeLocation }
+				Set(k.toString -> defUseMap.get(k))
+		} map { t => Map(t) } reduce (_ ++ _)
+		map { case (k, Some(v)) => k -> v.flatMap { i => S(method, i).codeLocation }
 		})
 	}
 }

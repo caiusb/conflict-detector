@@ -2,7 +2,7 @@ package com.brindescu.conflict.analysis
 
 import edu.illinois.wala.classLoader.CodeLocation
 
-class MethodDU(private val du: Map[Set[String], List[Option[CodeLocation]]]) {
+class MethodDU(private val du: Map[String, List[CodeLocation]]) {
 
 	def getMethodSignature: String = {
 		???
@@ -13,10 +13,12 @@ class MethodDU(private val du: Map[Set[String], List[Option[CodeLocation]]]) {
 	}
 
 	def getUsesForVariable(v: String): List[CodeLocation] =
-		du.get(Set(v)).get collect { case Some(x) => x }
+		du.getOrElse(v, List())
+
+	override def toString = du.toString
 }
 
 object MethodDU {
-	def apply(du: Map[Set[String], List[Option[CodeLocation]]]) =
+	def apply(du: Map[String, List[CodeLocation]]) =
 		new MethodDU(du)
 }
