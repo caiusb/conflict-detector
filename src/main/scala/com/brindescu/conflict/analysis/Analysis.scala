@@ -3,7 +3,7 @@ package com.brindescu.conflict.analysis
 import com.brindescu.conflict.analysis.WALAConstants._
 import com.ibm.wala.ipa.callgraph.impl.ContextInsensitiveSelector
 import com.ibm.wala.ipa.callgraph.propagation.cfa.nCFAContextSelector
-import com.ibm.wala.ssa.SSAInstruction
+import com.ibm.wala.ssa.{SSAAbstractInvokeInstruction, SSAInstruction}
 import com.typesafe.config.{Config, ConfigFactory, ConfigList, ConfigValueFactory}
 import edu.illinois.wala.Facade._
 import edu.illinois.wala.S
@@ -17,6 +17,8 @@ class Analysis {
 
 	private var config: Config = ConfigFactory.empty()
 	var ncfa = 0
+
+	lazy val pa = doPointerAnalysis
 
 	addJavaLibraries
 
@@ -77,29 +79,38 @@ class Analysis {
 		this
 	}
 
-
-	def getPointerAnalysis() = {
+	def doPointerAnalysis() = {
 		implicit val config = this.config
 		new FlexibleCallGraphBuilder() {
 			override def cs = new nCFAContextSelector(ncfa, new ContextInsensitiveSelector())
 		}
 	}
 
+
+	def getPointerAnalysis() = pa
+
 	def getDUPathsForMethod(methodName: String): List[MethodDU] = {
-		val cg = getPointerAnalysis().cg
-		val methods = (cg filter {_.m.name == methodName	})
+		val cg = pa.cg
+		val methods = cg filter {_.m.name == methodName	}
 		methods map { getDUPathsForMethod(_) } toList
 	}
 
 	def getDUPathsForMethod(method: N): MethodDU = {
-		val defUseMap = method.getIR.iterateAllInstructions.map(i => i.getDef)
-			.map(d => d -> method.getDU.getUses(d).toList).toMap
-		MethodDU(defUseMap.keys flatMap { k =>
-			resolveVariableNames(method, k, defUseMap.get(k))
+		val localUses = method.getIR.iterateAllInstructions.map { i => i.getDef(0) }
+			.map(d => d -> getUses(method, d)).toMap
+		val paramUses = Range(0, method.getIR.getNumberOfParameters)
+			.map(p => method.getIR.getParameter(p))
+			.map(d => d -> getUses(method, d)).toMap
+		val uses = localUses ++ paramUses
+		MethodDU(uses.keys flatMap { value =>
+			resolveVariableNames(method, value, uses.get(value))
 		} map { t => Map(t) } reduce (_ ++ _)
 		map { case (k, Some(v)) => k -> v.flatMap { i => resolveInstructionLineNo(method, i) }
 		})
 	}
+
+	private def getUses(method: N, d: Int): List[SSAInstruction] =
+		method.getDU.getUses(d).toList
 
 	private def resolveInstructionLineNo(method: N, i: I): Iterable[CodeLocation] =
 		S(method, i).codeLocation

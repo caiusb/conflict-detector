@@ -27,20 +27,4 @@ class SmokeTest extends FlatSpec with Matchers with ResourceAccess {
 
 		nodes should have size 3
 	}
-
-	it should "get a def-use graph" in {
-		val analysis = new Analysis()
-		  .setEntryPoint(".*DefUseTest.*m.*")
-		  .addSourceDependency(getResourceFile("/def-use"))
-		  .setExclusion("")
-
-		val pa = analysis.getPointerAnalysis()
-
-		val withVariables = analysis.getDUPathsForMethod("m")
-
-		withVariables should have size 1
-		withVariables.head.getUsesForVariable("x") should have size 2
-		withVariables.head.getUsesForVariable("y") should have size 1
-		withVariables.head.getUsesForVariable("z") should have size 1
-	}
 }
