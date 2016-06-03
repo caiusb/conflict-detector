@@ -8,8 +8,8 @@ import edu.illinois.wala.ssa.V
 
 import scala.collection.JavaConversions._
 
-class MethodDU(private val du: Map[String, List[CodeLocation]],
-							 private val m: M) {
+class MethodDU private(private val du: Map[String, List[CodeLocation]],
+											 private val m: M) {
 
 	def getMethodSignature: String = {
 		m.getSignature
@@ -26,7 +26,7 @@ class MethodDU(private val du: Map[String, List[CodeLocation]],
 }
 
 object MethodDU {
-	def apply(du: Map[String, List[CodeLocation]], m: M) =
+	private def apply(du: Map[String, List[CodeLocation]], m: M) =
 		new MethodDU(du, m)
 
 	def getDUPathsForMethod(method: N): MethodDU = {
