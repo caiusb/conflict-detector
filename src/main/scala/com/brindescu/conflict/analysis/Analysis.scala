@@ -3,9 +3,11 @@ package com.brindescu.conflict.analysis
 import com.brindescu.conflict.analysis.WALAConstants._
 import com.ibm.wala.ipa.callgraph.impl.ContextInsensitiveSelector
 import com.ibm.wala.ipa.callgraph.propagation.cfa.nCFAContextSelector
+import com.ibm.wala.ssa.SSAInstruction
 import com.typesafe.config.{Config, ConfigFactory, ConfigList, ConfigValueFactory}
 import edu.illinois.wala.Facade._
 import edu.illinois.wala.S
+import edu.illinois.wala.classLoader.CodeLocation
 import edu.illinois.wala.ipa.callgraph.FlexibleCallGraphBuilder
 import edu.illinois.wala.ssa.V
 
@@ -93,14 +95,21 @@ class Analysis {
 		val defUseMap = method.getIR.iterateAllInstructions.map(i => i.getDef)
 			.map(d => d -> method.getDU.getUses(d).toList).toMap
 		MethodDU(defUseMap.keys flatMap { k =>
-			val names = method.variableNames(V(k))
-			if (!names.isEmpty)
-				names.map(_ -> defUseMap.get(k))
-			else
-				Set(k.toString -> defUseMap.get(k))
+			resolveVariableNames(method, k, defUseMap.get(k))
 		} map { t => Map(t) } reduce (_ ++ _)
-		map { case (k, Some(v)) => k -> v.flatMap { i => S(method, i).codeLocation }
+		map { case (k, Some(v)) => k -> v.flatMap { i => resolveInstructionLineNo(method, i) }
 		})
+	}
+
+	private def resolveInstructionLineNo(method: N, i: I): Iterable[CodeLocation] =
+		S(method, i).codeLocation
+
+	private def resolveVariableNames(method: N, k: Int, uses: Option[List[I]]): Set[(String, Option[List[SSAInstruction]])] = {
+		val names = method.variableNames(V(k))
+		if (!names.isEmpty)
+			names.map(_ -> uses)
+		else
+			Set(k.toString -> uses)
 	}
 }
 
