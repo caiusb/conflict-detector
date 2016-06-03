@@ -15,10 +15,6 @@ class MethodDU private(private val du: Map[String, List[CodeLocation]],
 		m.getSignature
 	}
 
-	def getLocalVariables: Set[String] = {
-		???
-	}
-
 	def getUsesForVariable(v: String): List[CodeLocation] =
 		du.getOrElse(v, List())
 
